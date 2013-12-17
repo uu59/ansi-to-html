@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+# vim: set ft=ruby:
+
+# Usage:
+# $ tmux capture-pane -S -10000  -e; tmux show-buffer > /tmp/terminal
+# $ ansi-to-html /tmp/terminal > /tmp/foo.html
+# $ cat /tmp/terminal | ansi-to-html > /tmp/bar.html
+# $ tmux capture-pane -S -10000  -e; tmux show-buffer | ansi-to-html > /tmp/baz.html
+
+require File.expand_path("../../lib/ansi-to-html.rb", __FILE__)
+require "optparse"
+
+opt = OptionParser.new
+
+colors = {
+  :fg => "#fff",
+  :bg => "#000",
+}
+opt.on('-f', '--fg=VAL') {|v| colors[:fg] = v }
+opt.on('-b', '--bg=VAL') {|v| colors[:bg] = v }
+opt.parse! ARGV
+
+if ARGF.to_io == STDIN && !File.pipe?(STDIN)
+  warn "any file or stdin needed."
+  exit
+end
+
+ansi = Ansi::To::Html.new(ARGF)
+
+puts "<html><head><style>"
+puts <<-CSS
+  body {
+  background-color: #{colors[:bg]};
+  color: #{colors[:fg]};
+  }
+CSS
+puts "</style></head><body>"
+puts "<pre>"
+puts ansi.to_html
+puts "</pre>"
+puts "</body></html>"
