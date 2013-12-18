@@ -28,13 +28,7 @@ end
 ansi = Ansi::To::Html.new(ARGF)
 
 puts "<html><head><style>"
-puts <<-CSS
-  body {
-  background-color: #{colors[:bg]};
-  color: #{colors[:fg]};
-  }
-CSS
-puts "</style></head><body>"
+puts %Q!</style></head><body style="color:#{colors[:fg]};background-color:#{colors[:bg]}">!
 puts "<pre>"
 puts ansi.to_html
 puts "</pre>"
