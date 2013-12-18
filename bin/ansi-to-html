@@ -16,8 +16,8 @@ colors = {
   :fg => "#fff",
   :bg => "#000",
 }
-opt.on('-f', '--fg=VAL') {|v| colors[:fg] = v }
-opt.on('-b', '--bg=VAL') {|v| colors[:bg] = v }
+opt.on('-f VAL', '--fg=VAL') {|v| colors[:fg] = v }
+opt.on('-b VAL', '--bg=VAL') {|v| colors[:bg] = v }
 opt.parse! ARGV
 
 if ARGF.to_io == STDIN && !File.pipe?(STDIN)
