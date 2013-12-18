@@ -14,43 +14,30 @@ module Ansi
       ESCAPE = "\x1b"
 
       # Linux console palette
-      STYLES = {
-        'ef0'  => 'color:#000',
-        'ef1'  => 'color:#A00',
-        'ef2'  => 'color:#0A0',
-        'ef3'  => 'color:#A50',
-        'ef4'  => 'color:#00A',
-        'ef5'  => 'color:#A0A',
-        'ef6'  => 'color:#0AA',
-        'ef7'  => 'color:#AAA',
-        'ef8'  => 'color:#555',
-        'ef9'  => 'color:#F55',
-        'ef10' => 'color:#5F5',
-        'ef11' => 'color:#FF5',
-        'ef12' => 'color:#55F',
-        'ef13' => 'color:#F5F',
-        'ef14' => 'color:#5FF',
-        'ef15' => 'color:#FFF',
-        'eb0'  => 'background-color:#000',
-        'eb1'  => 'background-color:#A00',
-        'eb2'  => 'background-color:#0A0',
-        'eb3'  => 'background-color:#A50',
-        'eb4'  => 'background-color:#00A',
-        'eb5'  => 'background-color:#A0A',
-        'eb6'  => 'background-color:#0AA',
-        'eb7'  => 'background-color:#AAA',
-        'eb8'  => 'background-color:#555',
-        'eb9'  => 'background-color:#F55',
-        'eb10' => 'background-color:#5F5',
-        'eb11' => 'background-color:#FF5',
-        'eb12' => 'background-color:#55F',
-        'eb13' => 'background-color:#F5F',
-        'eb14' => 'background-color:#5FF',
-        'eb15' => 'background-color:#FFF',
+      pallete = { # http://www.pixelbeat.org/scripts/ansi2html.sh
+        :solarized => %w(
+          073642 D30102 859900 B58900 268BD2 D33682 2AA198 EEE8D5 002B36 CB4B16 586E75 657B83 839496 6C71C4 93A1A1 FDF6E3
+        ),
+        :linux => %w(
+          000 A00 0A0 A50 00A A0A 0AA AAA 555 F55 5F5 FF5 55F F5F 5FF FFF
+        ),
+        :tango => %w(
+          262626 AF0000 5F8700 AF8700 0087FF AF005F 00AFAF E4E4E4 1C1C1C D75F00 585858 626262 808080 5F5FAF 8A8A8A FFFFD7
+        ),
+        :xterm => %w(
+          000000 CD0000 00CD00 CDCD00 0000EE CD00CD 00CDCD E5E5E5 7F7F7F FF0000 00FF00 FFFF00 5C5CFF FF00FF 00FFFF FFFFFF
+        ),
       }
 
-      ##
-      # The default xterm 256 colour palette
+      STYLES = {}
+      PALLETE = {}
+      pallete.each do |key, colors|
+        PALLETE[key] = {}
+        (0..15).each do |n|
+          PALLETE[key]["ef#{n}"] = "color:##{colors[n]};"
+          PALLETE[key]["eb#{n}"] = "background-color:##{colors[n]}"
+        end
+      end
 
       (0..5).each do |red|
         (0..5).each do |green|
@@ -84,8 +71,13 @@ module Ansi
         @stack = []
       end
 
-      def to_html
+      def to_html(pallete = :linux)
         buf = []
+        if PALLETE.keys.include?(pallete)
+          @pallete = pallete
+        else
+          warn "--pallet=#{pallete} is unknown."
+        end
         each { |chunk| buf << chunk }
         buf.join
       end
@@ -128,7 +120,7 @@ module Ansi
       end
 
       def push_tag(tag, style=nil)
-        style = STYLES[style] if style && !style.include?(':')
+        style = STYLES[style] || PALLETE[@pallete || :linux][style] if style && !style.include?(':')
         @stack.push tag
         [ "<#{tag}",
           (" style='#{style}'" if style),

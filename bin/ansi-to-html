@@ -15,9 +15,11 @@ opt = OptionParser.new
 colors = {
   :fg => "#fff",
   :bg => "#000",
+  :pallete => :linux,
 }
 opt.on('-f VAL', '--fg=VAL') {|v| colors[:fg] = v }
 opt.on('-b VAL', '--bg=VAL') {|v| colors[:bg] = v }
+opt.on('-p VAL', '--pallete=VAL') {|v| colors[:pallete] = v.to_sym }
 opt.parse! ARGV
 
 if ARGF.to_io == STDIN && !File.pipe?(STDIN)
@@ -30,6 +32,6 @@ ansi = Ansi::To::Html.new(ARGF)
 puts "<html><head><style>"
 puts %Q!</style></head><body style="color:#{colors[:fg]};background-color:#{colors[:bg]}">!
 puts "<pre>"
-puts ansi.to_html
+puts ansi.to_html(colors[:pallete])
 puts "</pre>"
 puts "</body></html>"
