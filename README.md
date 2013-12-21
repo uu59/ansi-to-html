@@ -2,7 +2,7 @@
 
 ANSI color code sequence to HTML.
 
-See `examples/` directory for a generated result.
+See <http://uu59.github.io/ansi-to-html/index.html> for a generated result.
 
 This is almost deadcopy of [bcat](https://github.com/rtomayko/bcat/blob/master/lib/bcat/ansi.rb) :bow:
 
