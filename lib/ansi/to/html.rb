@@ -92,7 +92,7 @@ module Ansi
               yield data
             when :display
               case code = data
-              when 0,39,49        ; yield reset_styles if @stack.any? # NOTE: 39/49 is reset for fg/bg color only
+              when 0        ; yield reset_styles if @stack.any?
               when 1        ; yield push_tag("b") # bright
               when 2        ; #dim
               when 3, 4     ; yield push_tag("u")
@@ -101,7 +101,9 @@ module Ansi
               when 8        ; yield push_style("display:none")
               when 9        ; yield push_tag("strike")
               when 30..37   ; yield push_style("ef#{code - 30}")
+              when 39       ; yield push_style("ef7") # reset fg
               when 40..47   ; yield push_style("eb#{code - 40}")
+              when 49       ; yield push_style("eb0") # reset bg
               when 90..97   ; yield push_style("ef#{8 + code - 90}")
               when 100..107 ; yield push_style("eb#{8 + code - 100}")
               end 
